@@ -204,3 +204,42 @@ if ( is_user_logged_in() ) {
 
 // Default status.
 wp_die( '0' );
+
+
+add_action('wp_footer', 'ajax__example', 99);
+
+function ajax__example() {
+?>
+    <script type="text/javascript" >
+        jQuery(document).ready(function() {
+            jQuery('#ajax__say_hello').click( function(e) {
+                e.preventDefault();
+
+                var data    = { action  : 'example' };
+
+                jQuery.post( <?php echo site_url();?>'/wp-admin/admin-ajax.php', data, function(response) {
+
+                    if( response == "done" ) {
+                        alert("Hello!");
+                    }
+                    else if( response == "empty" ) {
+                        console.log("Sorry, we have some problems...")
+                    }
+                });
+            });
+        });
+    </script>
+    <?php
+}
+
+add_action('wp_ajax_example', 'example_callback');
+add_action('wp_ajax_nopriv_example', 'example_callback');
+
+function example_callback() {
+
+    if( $_POST["action"] == "example" )
+        echo "done";
+    else
+        echo "empty";
+    wp_die();
+}
